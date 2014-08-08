@@ -49,4 +49,11 @@ describe Task do
     task1.mark_as_done
     Task.all.first.status.should eq 't'
   end
+
+  it 'allows users to enter a date for a task' do
+    task1 = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
+    task1.save
+    task1.insert_date('8/8/2014')
+    Task.all.first.date.should eq '2014-08-08 12:00:00 -0700'
+  end
 end

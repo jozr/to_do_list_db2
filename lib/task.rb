@@ -1,12 +1,14 @@
 require 'pg'
+require 'chronic'
 
 class Task
-  attr_reader :name, :list_id, :status
+  attr_reader :name, :list_id, :status, :date
 
   def initialize(hash)
     @name = hash['name']
     @list_id = hash['list_id']
     @status = hash['status']
+    @date = hash['date']
   end
 
   def save
@@ -22,6 +24,12 @@ class Task
     @status = 't'
   end
 
+  def insert_date(user_date)
+    chroniced = Chronic.parse(user_date)
+    DB.exec("UPDATE tasks SET date = '#{chroniced}' WHERE name = '#{@name}';")
+    @date = user_date
+  end
+
   def self.all
     results = DB.exec("SELECT * FROM tasks;")
     tasks = []
@@ -29,7 +37,8 @@ class Task
       name = result['name']
       list_id = result['list_id'].to_i
       status = result['status']
-      tasks << Task.new({'name' => name , 'list_id' => list_id, 'status' => status})
+      date = result['date']
+      tasks << Task.new({'name' => name , 'list_id' => list_id, 'status' => status, 'date' => date})
     end
     tasks
   end
