@@ -38,22 +38,53 @@ describe Task do
   end
 
   it 'is the same task if it has the same name and list id' do
-    task1 = Task.new({'name' => 'learn SQL', 'list_id' =>1, 'status' => 'f'})
+    task = Task.new({'name' => 'learn SQL', 'list_id' =>1, 'status' => 'f'})
     task2 = Task.new({'name' => 'learn SQL', 'list_id' =>1, 'status' => 'f'})
-    task1.should eq task2
+    task.should eq task2
   end
 
-  it 'allows users to mark tasks as done' do
-    task1 = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
-    task1.save
-    task1.mark_as_done
+  it 'allows you to mark tasks as done' do
+    task = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
+    task.save
+    task.mark_as_done
     Task.all.first.status.should eq 't'
   end
 
-  it 'allows users to enter a date for a task' do
-    task1 = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
-    task1.save
-    task1.insert_date('8/8/2014')
+  it 'allows you to enter a date for a task' do
+    task = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
+    task.save
+    task.insert_date('8/8/2014')
     Task.all.first.date.should eq '2014-08-08 12:00:00 -0700'
+  end
+
+  it 'allows you to sort tasks in a list by their upcoming due date' do
+    list = List.new({'name' => 'Stuff'})
+    list.save
+    task = Task.new({'name' => 'learn SQL', 'list_id' => list.id, 'status' => 'f'})
+    task.save
+    task.insert_date('January 2, 2015')
+    task2 = Task.new({'name' => 'learn SQL', 'list_id' => list.id, 'status' => 'f'})
+    task2.save
+    task2.insert_date('December 30, 2013')
+    Task.sort_by_date_asc(list.id).should eq [task2, task]
+  end
+
+  it 'allows you to sort tasks in a list by their descending due date' do
+    list = List.new({'name' => 'Stuff'})
+    list.save
+    task = Task.new({'name' => 'learn SQL', 'list_id' => list.id, 'status' => 'f'})
+    task.save
+    task.insert_date('January 2, 2015')
+    task2 = Task.new({'name' => 'learn SQL', 'list_id' => list.id, 'status' => 'f'})
+    task2.save
+    task2.insert_date('December 30, 2013')
+    Task.sort_by_date_des(list.id).should eq [task, task2]
+  end
+
+  it 'allows you to edit the task name' do
+    task = Task.new({'name' => 'learn SQL', 'list_id' => 1, 'status' => 'f'})
+    task.save
+    task.edit_name('learn Ruby')
+    Task.all.first.name.should eq 'learn Ruby'
   end
 end

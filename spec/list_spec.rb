@@ -53,4 +53,11 @@ describe List do
     task2.save
     list.return_tasks.should eq ['computer']
   end
+
+  it 'allows you to edit the list name' do
+    list = List.new({'name' => 'learn SQL'})
+    list.save
+    list.edit_name('learn Ruby')
+    List.all.first.name.should eq 'learn Ruby'
+  end
 end

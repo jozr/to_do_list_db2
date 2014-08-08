@@ -30,6 +30,38 @@ class Task
     @date = user_date
   end
 
+  def self.sort_by_date_asc(list)
+    results = DB.exec("SELECT * FROM tasks WHERE list_id = #{list};")
+    tasks = []
+    results.each do |result|
+      name = result['name']
+      list_id = result['list_id'].to_i
+      date = result['date']
+      status = result['status']
+      tasks << Task.new({'date' => date, 'name' => name, 'list_id' => list_id, 'status' => status})
+    end
+    tasks.sort_by {|object| object.date}
+  end
+
+  def edit_name(edited_name)
+    DB.exec("UPDATE tasks SET name = '#{edited_name}' WHERE name = '#{@name}';")
+    @name = edited_name
+  end
+
+  def self.sort_by_date_des(list)
+    results = DB.exec("SELECT * FROM tasks WHERE list_id = #{list};")
+    tasks = []
+    results.each do |result|
+      name = result['name']
+      list_id = result['list_id'].to_i
+      date = result['date']
+      status = result['status']
+      tasks << Task.new({'date' => date, 'name' => name, 'list_id' => list_id, 'status' => status})
+    end
+    reversed = tasks.sort_by {|object| object.date}
+    reversed.reverse
+  end
+
   def self.all
     results = DB.exec("SELECT * FROM tasks;")
     tasks = []

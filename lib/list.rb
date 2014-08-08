@@ -22,6 +22,11 @@ class List
   lists
   end
 
+  def edit_name(edited_name)
+    DB.exec("UPDATE lists SET name = '#{edited_name}' WHERE name = '#{@name}';")
+    @name = edited_name
+  end
+
   def save
     results = DB.exec("INSERT INTO lists (name) VALUES ('#{@name}') RETURNING id;")
     @id = results.first['id'].to_i
